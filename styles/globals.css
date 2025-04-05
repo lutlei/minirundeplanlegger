@@ -1,0 +1,161 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+.dark {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 0, 0, 0;
+  --background-end-rgb: 0, 0, 0;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: white;
+}
+
+.dark body {
+  background: rgb(15, 23, 42);
+}
+
+/* Override default focus styling with theme-appropriate colors */
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 2px solid #14b8a6; /* teal-500 */
+  outline-offset: 2px;
+}
+
+.dark *:focus-visible {
+  outline: 2px solid #2dd4bf; /* teal-400 */
+  outline-offset: 2px;
+}
+
+/* Custom styling for input fields */
+input, select {
+  background-color: white;
+  border-color: #d1d5db; /* gray-300 */
+}
+
+.dark input, .dark select {
+  background-color: #1e293b; /* slate-800 */
+  border-color: #475569; /* slate-600 */
+  color: #f1f5f9; /* slate-100 */
+}
+
+.dark input::placeholder, .dark select::placeholder {
+  color: #94a3b8; /* slate-400 */
+}
+
+.dark input[type="date"]::-webkit-calendar-picker-indicator,
+.dark input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+.dark input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.8);
+}
+
+/* Custom styles for number input spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  opacity: 1;
+}
+
+/* Ensure dark mode works properly */
+.dark {
+  color-scheme: dark;
+}
+
+/* Background colors for sections */
+.dark .bg-slate-50 {
+  background-color: #1e293b !important; /* slate-800 */
+}
+
+.dark .bg-white {
+  background-color: #0f172a !important; /* slate-900 */
+}
+
+@layer components {
+  /* Tab navigation styles */
+  .tab-button {
+    @apply py-2 px-4 text-sm font-medium border-b-2 border-transparent 
+    focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500;
+  }
+  
+  .active-tab {
+    @apply text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400;
+  }
+  
+  .inactive-tab {
+    @apply text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 
+    hover:border-slate-300 dark:hover:border-slate-500;
+  }
+  
+  /* Form styles */
+  input, select, textarea {
+    @apply bg-white dark:bg-slate-700 dark:text-white;
+  }
+  
+  input:focus, select:focus, textarea:focus {
+    @apply outline-none ring-2 ring-blue-500 border-blue-500 dark:ring-blue-400 dark:border-blue-400;
+  }
+  
+  /* Focus styles */
+  .focus-visible {
+    @apply outline-none ring-2 ring-blue-500 dark:ring-blue-400;
+  }
+  
+  /* Number input spinner styles */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    @apply opacity-100 h-5 m-0;
+  }
+  
+  /* Pool colors for schedule display */
+  .pool-color-0 {
+    @apply bg-amber-100 dark:bg-amber-900/30;
+  }
+  
+  .pool-color-1 {
+    @apply bg-blue-100 dark:bg-blue-900/30;
+  }
+  
+  .pool-color-2 {
+    @apply bg-green-100 dark:bg-green-900/30;
+  }
+  
+  .pool-color-3 {
+    @apply bg-purple-100 dark:bg-purple-900/30;
+  }
+  
+  .pool-color-4 {
+    @apply bg-pink-100 dark:bg-pink-900/30;
+  }
+  
+  .pool-color-5 {
+    @apply bg-cyan-100 dark:bg-cyan-900/30;
+  }
+  
+  .pool-color-6 {
+    @apply bg-indigo-100 dark:bg-indigo-900/30;
+  }
+  
+  .pool-color-7 {
+    @apply bg-orange-100 dark:bg-orange-900/30;
+  }
+  
+  /* Animation */
+  .fade-in {
+    animation: fadeIn 0.3s ease-in;
+  }
+  
+  @keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+} 

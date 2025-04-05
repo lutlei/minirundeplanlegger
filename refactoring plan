@@ -1,0 +1,330 @@
+# Jimini - Refactoring Plan for Vercel Deployment with OpenAI Assistants
+
+## 1. Project Structure
+
+Create a modern Next.js application with the following structure:
+```
+jimini/
+├── .env                    # Environment variables
+├── .gitignore              # Git ignore file
+├── components/             # React components
+│   ├── layout/             # Layout components
+│   ├── ui/                 # UI components
+│   ├── forms/              # Form components
+│   └── assistants/         # Assistant-related components
+├── contexts/               # React context providers
+├── lib/                    # Utility functions and API wrappers
+│   ├── openai.js           # OpenAI Assistant API interface
+├── models/                 # Data models/types
+├── pages/                  # Next.js pages
+│   ├── api/                # API routes
+│   │   ├── assistants/     # Assistant-related API routes
+│   │   ├── teams/          # Team-related API routes
+│   │   └── schedule/       # Schedule-related API routes
+│   ├── _app.js             # Custom App component
+│   ├── index.js            # Landing page
+│   └── app/                # Main application
+├── public/                 # Static assets
+│   ├── images/             # Images
+│   └── fonts/              # Fonts
+├── styles/                 # Global styles
+│   ├── globals.css         # Global CSS
+│   └── theme.js            # Theme configuration
+├── next.config.js          # Next.js configuration
+├── package.json            # Dependencies
+└── README.md               # Project documentation
+```
+
+## 2. Technology Stack
+
+- **Frontend Framework**: Next.js (React)
+- **Styling**: Tailwind CSS (already in use)
+- **Deployment**: Vercel
+- **AI Integration**: OpenAI Assistants API
+- **State Management**: React Context API + local storage
+- **Authentication**: (Optional) Clerk, Auth0, or NextAuth
+- **Database**: (Optional) Vercel KV, Supabase, or Firestore for persistence
+
+## 3. OpenAI Assistants Integration
+
+Create three distinct assistants:
+
+1. **General Assistant (Jimini Basic)**
+   - Purpose: General help about the application
+   - Capabilities: Answer questions about how to use the application, basic tournament information
+   - Visibility: Available to all users
+
+2. **Sports Specialist (Jimini Sport)**
+   - Purpose: Specialized knowledge about mini-tournaments, rules, best practices
+   - Capabilities: Answers questions about tournament setup, rules, and strategies
+   - Visibility: Available to all users
+   - Files: Sports regulations, tournament rules
+
+3. **Expert Assistant (Jimini Pro)**
+   - Purpose: Internal tool for administrators/organizers
+   - Capabilities: Access to internal documentation, detailed assistant for organizers
+   - Visibility: Available only to authenticated organizers
+   - Files: Internal manuals, guidance documents, best practices
+   - Additional features: Ability to access and query historical tournament data
+
+## 4. Implementation Phases
+
+### Phase 1: Project Setup and Migration
+1. Initialize Next.js project with Tailwind CSS
+2. Set up project structure
+3. Migrate HTML structure to React components
+4. Implement basic styling and responsive design
+5. Migrate JavaScript functionality to React hooks and context
+
+### Phase 2: Core Functionality
+1. Implement team registration features
+2. Implement tournament settings management
+3. Implement schedule generation algorithm
+4. Create API endpoints for data operations
+5. Add local storage persistence
+
+### Phase 3: OpenAI Assistants Integration
+1. Set up OpenAI client with API key
+2. Create three assistant instances in OpenAI
+3. Implement thread management for user conversations
+4. Create chat interface components
+5. Implement context-aware prompting
+
+### Phase 4: Authentication and Advanced Features
+1. Implement authentication (if required)
+2. Add role-based access control for admin features
+3. Implement expert assistant with restricted access
+4. Add file upload capabilities for internal documents
+5. Implement database persistence (if required)
+
+### Phase 5: Deployment and Performance
+1. Optimize for performance
+2. Set up CI/CD with GitHub
+3. Configure Vercel deployment
+4. Set up environment variables and secrets
+5. Perform testing and bug fixing
+
+## 5. OpenAI Assistants Implementation Details
+
+### Assistant Creation
+```javascript
+// lib/openai.js
+
+import OpenAI from "openai";
+
+const openai = new OpenAI(process.env.OPENAI_API_KEY);
+
+export async function createAssistants() {
+  // Create General Assistant
+  const generalAssistant = await openai.beta.assistants.create({
+    name: "Jimini Basic",
+    instructions: "You are Jimini Basic, a helpful assistant for the Jimini tournament management application. Help users understand how to use the platform and answer general questions.",
+    tools: [{ type: "code_interpreter" }],
+    model: "gpt-4-turbo",
+  });
+
+  // Create Sports Specialist
+  const sportsSpecialist = await openai.beta.assistants.create({
+    name: "Jimini Sport",
+    instructions: "You are Jimini Sport, a specialist in mini-tournaments and sports organization. Provide detailed advice on tournament setup, rules, and strategies.",
+    tools: [{ type: "code_interpreter" }, { type: "retrieval" }],
+    model: "gpt-4-turbo",
+  });
+
+  // Create Expert Assistant
+  const expertAssistant = await openai.beta.assistants.create({
+    name: "Jimini Pro",
+    instructions: "You are Jimini Pro, an expert assistant for tournament organizers. You have access to internal documentation and can provide detailed guidance on complex tournament management tasks.",
+    tools: [{ type: "code_interpreter" }, { type: "retrieval" }, { type: "function" }],
+    model: "gpt-4-turbo",
+  });
+
+  return {
+    generalAssistant,
+    sportsSpecialist,
+    expertAssistant
+  };
+}
+```
+
+### Thread Management
+```javascript
+// lib/openai.js
+
+export async function createThread() {
+  const thread = await openai.beta.threads.create();
+  return thread;
+}
+
+export async function addMessageToThread(threadId, content, role = "user") {
+  const message = await openai.beta.threads.messages.create(
+    threadId,
+    {
+      role,
+      content
+    }
+  );
+  return message;
+}
+
+export async function runAssistant(assistantId, threadId, instructions = "") {
+  const run = await openai.beta.threads.runs.create(
+    threadId,
+    {
+      assistant_id: assistantId,
+      instructions
+    }
+  );
+  return run;
+}
+
+export async function getMessages(threadId) {
+  const messages = await openai.beta.threads.messages.list(threadId);
+  return messages.data;
+}
+```
+
+### API Routes
+```javascript
+// pages/api/assistants/message.js
+
+import { addMessageToThread, runAssistant, getMessages } from '../../../lib/openai';
+
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  try {
+    const { threadId, assistantId, message, context } = req.body;
+    
+    // Add message to thread
+    await addMessageToThread(threadId, message);
+    
+    // Run the assistant
+    const run = await runAssistant(assistantId, threadId, context);
+    
+    // Poll for completion
+    let runStatus = await openai.beta.threads.runs.retrieve(threadId, run.id);
+    
+    while (runStatus.status !== 'completed' && runStatus.status !== 'failed') {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      runStatus = await openai.beta.threads.runs.retrieve(threadId, run.id);
+    }
+    
+    if (runStatus.status === 'failed') {
+      return res.status(500).json({ error: 'Assistant run failed' });
+    }
+    
+    // Get the messages
+    const messages = await getMessages(threadId);
+    
+    return res.status(200).json({ messages });
+  } catch (error) {
+    console.error('Error in assistant message:', error);
+    return res.status(500).json({ error: error.message });
+  }
+}
+```
+
+## 6. UI Components
+
+Create reusable components for chat interfaces:
+
+```jsx
+// components/assistants/ChatInterface.jsx
+
+import { useState, useEffect, useRef } from 'react';
+import { useAssistant } from '../../contexts/AssistantContext';
+
+export default function ChatInterface({ assistantType = 'general' }) {
+  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const messagesEndRef = useRef(null);
+  const { sendMessage, currentThread } = useAssistant(assistantType);
+
+  // Scroll to bottom whenever messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  const handleSend = async () => {
+    if (!input.trim()) return;
+    
+    const userMessage = { content: input, role: 'user' };
+    setMessages(prev => [...prev, userMessage]);
+    setInput('');
+    setLoading(true);
+    
+    try {
+      const response = await sendMessage(input);
+      setMessages(prev => [...prev, { content: response, role: 'assistant' }]);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      setMessages(prev => [...prev, { 
+        content: 'Sorry, I encountered an error. Please try again.', 
+        role: 'assistant' 
+      }]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-full">
+      <div className="flex-grow overflow-y-auto p-4 space-y-4">
+        {messages.map((msg, index) => (
+          <div 
+            key={index} 
+            className={`chat-message ${
+              msg.role === 'user' ? 'user-message' : 'assistant-message'
+            }`}
+          >
+            {msg.content}
+          </div>
+        ))}
+        {loading && (
+          <div className="assistant-message">
+            <div className="typing-indicator">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+        )}
+        <div ref={messagesEndRef} />
+      </div>
+      
+      <div className="border-t p-4 flex space-x-2">
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+          placeholder="Type your message..."
+          className="flex-grow p-2 border rounded-md focus:ring-2 focus:ring-primary"
+        />
+        <button
+          onClick={handleSend}
+          disabled={loading}
+          className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md transition"
+        >
+          Send
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+## 7. Next Steps
+
+1. Create a GitHub repository for the project
+2. Set up the Next.js application structure
+3. Begin component migration
+4. Implement OpenAI Assistants integration
+5. Set up Vercel deployment
+6. Test and refine the application
+
+This plan provides a structured approach to transform the existing HTML application into a modern, scalable Next.js application with integrated OpenAI Assistants, ready for deployment on Vercel.

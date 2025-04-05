@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 241, 245, 249; /* slate-100 */
+  --background-end-rgb: 248, 250, 252; /* slate-50 */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 203, 213, 225; /* slate-300 */
+    --background-start-rgb: 15, 23, 42; /* slate-900 */
+    --background-end-rgb: 30, 41, 59; /* slate-800 */
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+/* Chat message styles */
+.chat-message {
+  padding: 8px 12px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  max-width: 85%;
+  word-wrap: break-word;
+  line-height: 1.4;
+}
+
+.user-message {
+  background-color: #cffafe; /* Tailwind cyan-100 */
+  color: #0e7490; /* Tailwind cyan-700 */
+  margin-left: auto;
+  text-align: right;
+}
+
+.dark .user-message {
+  background-color: #164e63; /* Tailwind cyan-800 */
+  color: #ecfeff; /* Tailwind cyan-50 */
+}
+
+.assistant-message {
+  background-color: #f1f5f9; /* Tailwind slate-100 */
+  color: #334155; /* Tailwind slate-700 */
+  margin-right: auto;
+  text-align: left;
+}
+
+.dark .assistant-message {
+  background-color: #475569; /* Tailwind slate-600 */
+  color: #f1f5f9; /* Tailwind slate-100 */
+}
+
+/* Chat Input */
+.chat-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #14b8a6; /* primary */
+}
+
+/* Transitions */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.transition-transform {
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.transition-opacity {
+  transition-property: opacity;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.ease-out {
+  transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+}
+
+.duration-300 {
+  transition-duration: 300ms;
+}
+
+/* Typing indicator animation */
+@keyframes bounce {
+  0%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-5px); }
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite ease-in-out;
+} 

@@ -1,0 +1,43 @@
+/* Tab Styles */
+.tab-button { 
+  padding: 0.5rem 1rem; 
+  margin-bottom: -1px; 
+  border: 1px solid transparent; 
+  border-bottom-width: 2px; 
+  border-top-left-radius: 0.375rem; 
+  border-top-right-radius: 0.375rem; 
+  font-weight: 600; 
+  cursor: pointer; 
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out; 
+}
+
+.active-tab { 
+  color: #0d9488; /* Tailwind teal-600 */ 
+  border-color: #d1d5db #d1d5db #ffffff; /* gray-300 gray-300 white */ 
+  border-bottom-color: #14b8a6; /* teal-500 */ 
+} 
+
+.dark .active-tab { 
+  color: #5eead4; /* Tailwind teal-300 */ 
+  border-color: #4b5563 #4b5563 #1f2937; 
+  border-bottom-color: #2dd4bf; /* teal-400 */ 
+}
+
+.inactive-tab { 
+  color: #64748b; /* Tailwind slate-500 */ 
+  border-color: transparent; 
+} 
+
+.dark .inactive-tab { 
+  color: #94a3b8; /* Tailwind slate-400 */ 
+}
+
+.inactive-tab:hover { 
+  color: #334155; /* Tailwind slate-700 */ 
+  border-bottom-color: #e2e8f0; /* slate-200 */ 
+} 
+
+.dark .inactive-tab:hover { 
+  color: #cbd5e1; /* Tailwind slate-300 */ 
+  border-bottom-color: #475569; /* slate-600 */ 
+} 
