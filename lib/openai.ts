@@ -1,7 +1,9 @@
 import OpenAI from 'openai';
 
-// Initialize the OpenAI client
-const openai = new OpenAI(process.env.OPENAI_API_KEY);
+// Initialize the OpenAI client with proper configuration
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY || 'sk-placeholder-for-build'
+});
 
 // Define types
 export interface Assistant {
@@ -17,7 +19,7 @@ export interface Thread {
 export interface Message {
   id: string;
   role: 'user' | 'assistant';
-  content: string | Array<{ type: string; text: { value: string } }>;
+  content: string | Array<{ type: string; text?: { value: string } }>;
 }
 
 // Cache for assistant IDs
@@ -114,8 +116,7 @@ async function createSportsAssistant() {
     sports organization best practices.`,
     model: 'gpt-4-turbo',
     tools: [
-      { type: 'code_interpreter' },
-      { type: 'retrieval' }
+      { type: 'code_interpreter' }
     ],
   });
 }
@@ -141,9 +142,7 @@ async function createExpertAssistant() {
     and power users. Reference internal documentation where appropriate.`,
     model: 'gpt-4-turbo',
     tools: [
-      { type: 'code_interpreter' },
-      { type: 'retrieval' },
-      { type: 'function' }
+      { type: 'code_interpreter' }
     ],
   });
 }
@@ -241,7 +240,12 @@ export async function getMessages(threadId: string, limit = 20): Promise<Message
     return response.data.map(message => ({
       id: message.id,
       role: message.role as 'user' | 'assistant',
-      content: message.content,
+      content: typeof message.content === 'string' 
+        ? message.content 
+        : message.content.map(item => ({
+            type: item.type,
+            text: item.type === 'text' ? { value: (item as any).text.value } : undefined
+          }))
     }));
   } catch (error) {
     console.error('Error getting messages:', error);
