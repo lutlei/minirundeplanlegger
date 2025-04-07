@@ -458,6 +458,28 @@ const TournamentPlanner: React.FC = () => {
     }
   };
   
+  // Add this function to generate test teams
+  const generateTestTeams = () => {
+    const categories = ["Mikro", "Mini", "Lillegutt/jente"];
+    const newTeams: Team[] = [];
+    let id = nextTeamId;
+    
+    // Generate 56 teams (roughly 18-19 per category)
+    for (let i = 0; i < 56; i++) {
+      const category = categories[i % 3];
+      const newTeam: Team = {
+        id: id++,
+        name: `Test Lag ${id} (${category})`,
+        category: category
+      };
+      newTeams.push(newTeam);
+    }
+    
+    setTeams([...teams, ...newTeams]);
+    setNextTeamId(id);
+    showMessage("56 testlag ble lagt til!", "success");
+  };
+  
   return (
     <div className={darkMode ? 'dark' : ''}>
       <div className="container mx-auto max-w-4xl bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-slate-700 relative">
@@ -702,6 +724,17 @@ const TournamentPlanner: React.FC = () => {
       
       {/* Chat Assistant */}
       <ChatAssistant />
+      
+      {/* Add this near the end, before the closing div */}
+      <div className="fixed right-4 bottom-20 z-10">
+        <button 
+          onClick={generateTestTeams}
+          className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg shadow-md"
+          title="Legg til 56 testlag"
+        >
+          Legg til 56 testlag
+        </button>
+      </div>
     </div>
   );
 };
