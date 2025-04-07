@@ -7,7 +7,7 @@
     "dev:no-turbo": "NEXT_TURBO=0 next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint ."
   },
   "dependencies": {
     "next": "^14.0.4",
