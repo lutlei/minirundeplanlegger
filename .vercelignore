@@ -1,0 +1,6 @@
+app_disabled
+node_modules
+.next
+README.md
+.env.local
+.env.local.example 
