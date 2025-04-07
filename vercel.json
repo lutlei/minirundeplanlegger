@@ -1,9 +1,17 @@
 {
-  "version": 2,
   "buildCommand": "npm run build",
   "devCommand": "npm run dev",
-  "outputDirectory": ".next",
   "framework": "nextjs",
+  "outputDirectory": ".next",
+  "cleanUrls": true,
+  "public": false,
+  "installCommand": "npm install",
+  "builds": [
+    { 
+      "src": "package.json", 
+      "use": "@vercel/next" 
+    }
+  ],
   "env": {
     "NEXT_PUBLIC_APP_NAME": "Minirundeplanlegger",
     "NEXT_PUBLIC_APP_DESCRIPTION": "Planlegg din egen minirunde med vår enkle turneringsplanlegger"
