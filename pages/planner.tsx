@@ -1,6 +1,7 @@
 import React from 'react';
-import TournamentPlanner from '@/components/TournamentPlanner';
 import Head from 'next/head';
+import Link from 'next/link';
+import TournamentPlanner from '../components/TournamentPlanner';
 
 const PlannerPage: React.FC = () => {
   return (
