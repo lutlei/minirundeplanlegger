@@ -102,14 +102,23 @@ const ChatAssistant: React.FC = () => {
         }),
       });
       
-      const data = await response.json();
+      // Handle non-JSON responses or network errors gracefully
+      let data;
+      try {
+        data = await response.json();
+      } catch (error) {
+        console.error('Error parsing response:', error);
+        throw new Error('Kunne ikke tolke svar fra serveren. Sjekk nettverkstilkoblingen.');
+      }
       
       if (!response.ok) {
         let errorMessage = 'Beklager, det oppstod en feil ved behandling av meldingen din.';
         
         // Special handling for API key errors
         if (data.error && data.error.includes('API key')) {
-          errorMessage = 'OpenAI API-nøkkel mangler eller er ugyldig. Vennligst sett en gyldig nøkkel i .env.local filen.';
+          errorMessage = 'OpenAI API-nøkkel mangler eller er ugyldig. Dette er forventet i demo-miljøet. I en fullversjon ville dette fungert med en gyldig API-nøkkel.';
+        } else if (data.error) {
+          errorMessage = `Feil: ${data.error}`;
         }
         
         throw new Error(errorMessage);

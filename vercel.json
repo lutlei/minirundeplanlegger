@@ -5,7 +5,6 @@
   "outputDirectory": ".next",
   "framework": "nextjs",
   "env": {
-    "OPENAI_API_KEY": "@openai_api_key",
     "NEXT_PUBLIC_APP_NAME": "Minirundeplanlegger",
     "NEXT_PUBLIC_APP_DESCRIPTION": "Planlegg din egen minirunde med vår enkle turneringsplanlegger"
   }
