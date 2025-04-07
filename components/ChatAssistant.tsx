@@ -11,12 +11,19 @@ const ChatAssistant: React.FC = () => {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [threadId, setThreadId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   
   // Load messages from localStorage on mount
   useEffect(() => {
     const savedMessages = localStorage.getItem('chatMessages');
+    const savedThreadId = localStorage.getItem('assistantThreadId');
+    
+    if (savedThreadId) {
+      setThreadId(savedThreadId);
+    }
+    
     if (savedMessages) {
       try {
         const parsedMessages = JSON.parse(savedMessages).map((msg: any) => ({
@@ -44,7 +51,11 @@ const ChatAssistant: React.FC = () => {
     if (messages.length > 0) {
       localStorage.setItem('chatMessages', JSON.stringify(messages));
     }
-  }, [messages]);
+    
+    if (threadId) {
+      localStorage.setItem('assistantThreadId', threadId);
+    }
+  }, [messages, threadId]);
   
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -83,6 +94,7 @@ const ChatAssistant: React.FC = () => {
         },
         body: JSON.stringify({
           message: input.trim(),
+          threadId: threadId, // Pass the current threadId if it exists
           history: messages.map(msg => ({
             role: msg.role,
             content: msg.content
@@ -101,6 +113,11 @@ const ChatAssistant: React.FC = () => {
         }
         
         throw new Error(errorMessage);
+      }
+      
+      // Save threadId for future messages
+      if (data.threadId) {
+        setThreadId(data.threadId);
       }
       
       // Add assistant response
@@ -147,6 +164,10 @@ const ChatAssistant: React.FC = () => {
           timestamp: new Date()
         }
       ]);
+      
+      // Reset the thread
+      setThreadId(null);
+      localStorage.removeItem('assistantThreadId');
     }
   };
   
